@@ -8,39 +8,39 @@ Celem projektu jest stworzenie kompletnej, skalowalnej infrastruktury obejmując
 
 Projekt wykorzystuje następujące technologie i narzędzia:
 
-* **Chmura:** AWS (EC2 / ECS Fargate) [cite: 4]
-* **IaC:** Terraform [cite: 6]
-* **Auth:** Keycloak [cite: 7]
-* **Storage:** MinIO (S3-compatible) [cite: 8]
-* **Baza danych:** PostgreSQL / MongoDB (Self-hosted) [cite: 9]
-* **Monitoring:** Prometheus & Grafana [cite: 10]
+* **Chmura:** AWS (EC2 / ECS Fargate)
+* **IaC:** Terraform
+* **Auth:** Keycloak
+* **Storage:** MinIO (S3-compatible)
+* **Baza danych:** PostgreSQL / MongoDB (Self-hosted)
+* **Monitoring:** Prometheus & Grafana
 
 ---
 
 ## 🚀 Infrastruktura i Funkcjonalności
 
-Cała infrastruktura jest definiowana i zarządzana za pomocą Terraform[cite: 5, 6]. Poniżej znajduje się opis poszczególnych serwisów:
+Cała infrastruktura jest definiowana i zarządzana za pomocą Terraform. Poniżej znajduje się opis poszczególnych serwisów:
 
 ### 1. Aplikacja Webowa
 Główna aplikacja została rozszerzona i jest hostowana w chmurze AWS.
 
 ### 2. Uwierzytelnianie (Keycloak)
 Zarządzanie tożsamością i dostępem zostało zrealizowane przy użyciu Keycloak.
-* Zapewnia bezpieczne logowanie i rejestrację użytkowników[cite: 7].
-* Dokumentacja: [Keycloak Docs](https://www.keycloak.org/documentation)[cite: 11].
+* Zapewnia bezpieczne logowanie i rejestrację użytkowników.
+* Dokumentacja: [Keycloak Docs](https://www.keycloak.org/documentation).
 
 ### 3. Object Storage (MinIO)
 Do przechowywania plików multimedialnych wykorzystano MinIO, które oferuje API kompatybilne z Amazon S3.
-* Samodzielnie hostowana instancja do obsługi uploadu i downloadu plików[cite: 8].
-* Dokumentacja: [MinIO Docs](https://docs.min.io/enterprise/aistor-object-store/)[cite: 12].
+* Samodzielnie hostowana instancja do obsługi uploadu i downloadu plików.
+* Dokumentacja: [MinIO Docs](https://docs.min.io/enterprise/aistor-object-store/).
 
 ### 4. Baza Danych
-Dane aplikacji są przechowywane w samodzielnie hostowanej bazie danych (PostgreSQL lub MongoDB), uruchomionej wewnątrz infrastruktury[cite: 9].
+Dane aplikacji są przechowywane w samodzielnie hostowanej bazie danych (PostgreSQL lub MongoDB), uruchomionej wewnątrz infrastruktury.
 
 ### 5. Monitoring (Prometheus + Grafana)
-Zaimplementowano pełny stack monitoringowy[cite: 10]:
-* **Prometheus:** Zbieranie metryk z aplikacji i infrastruktury[cite: 13].
-* **Grafana:** Wizualizacja danych i dashboardy analityczne[cite: 14].
+Zaimplementowano pełny stack monitoringowy:
+* **Prometheus:** Zbieranie metryk z aplikacji i infrastruktury.
+* **Grafana:** Wizualizacja danych i dashboardy analityczne.
 
 ---
 
