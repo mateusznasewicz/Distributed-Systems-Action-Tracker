@@ -6,7 +6,7 @@ provider "keycloak" {
 }
 
 resource "keycloak_realm" "realm" {
-  depends_on = [docker_container.keycloak]
+  depends_on = [docker_container.keycloak, docker_container.proxy]
   realm   = "todo-app-realm"
   enabled = true
   display_name = "To Do Application"
