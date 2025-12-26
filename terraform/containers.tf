@@ -12,6 +12,9 @@ resource "docker_network" "todo_net" { name = "todo_network" }
 resource "docker_volume" "postgres_data" { name = "postgres_data" }
 resource "docker_volume" "minio_data"    { name = "minio_data" }
 resource "docker_volume" "keycloak_data" { name = "keycloak_data" }
+resource "docker_volume" "grafana_data" { name = "grafana_data" }
+resource "docker_volume" "prometheus_data" { name = "prometheus_data" }
+
 
 resource "docker_container" "database" {
   name  = "database"
@@ -119,10 +122,36 @@ resource "docker_container" "prometheus" {
   name  = "prometheus"
   image = "prom/prometheus:latest"
   networks_advanced { name = docker_network.todo_net.name }
+
+  volumes {
+    host_path = abspath("${path.module}/../prometheus.yml")
+    container_path = "/etc/prometheus/prometheus.yml"
+  }
+
+  volumes {
+    volume_name      =  docker_volume.prometheus_data.name
+    container_path = "/prometheus"
+  }
 }
 
 resource "docker_container" "grafana" {
   name  = "grafana"
   image = "grafana/grafana:latest"
   networks_advanced { name = docker_network.todo_net.name }
+
+  env = [
+    "GF_SERVER_DOMAIN=${local.current_dns}",
+    "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/",
+    "GF_SERVER_SERVE_FROM_SUB_PATH=true"
+  ]
+
+  volumes {
+    host_path = abspath("${path.module}/../grafana_datasource.yml")
+    container_path = "/etc/grafana/provisioning/datasources/datasource.yaml"
+  }
+
+  volumes {
+    volume_name = docker_volume.grafana_data.name
+    container_path = "/var/lib/grafana"
+  }
 }

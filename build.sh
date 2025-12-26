@@ -12,6 +12,7 @@ wait_for_service() {
 }
 
 cd terraform
+source .env
 terraform init
 TARGET=${1:-local}
 if [ "$TARGET" == "local" ]; then
