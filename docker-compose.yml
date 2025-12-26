@@ -20,18 +20,12 @@ services:
   keycloak:
     image: keycloak/keycloak:latest
     container_name: keycloak
-    command: start-dev --import-realm
-    configs:
-      - source: realm_config
-        target: /opt/keycloak/data/import/realm.json
+    command: start-dev
     volumes:
       - keycloak_data:/opt/keycloak/data
     environment:
       KC_HTTP_ENABLED: "true"
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_HTTP_RELATIVE_PATH: /auth
-    
   
   database:
     image: postgres:latest
