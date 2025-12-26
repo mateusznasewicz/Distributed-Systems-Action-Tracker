@@ -1,7 +1,8 @@
 provider "minio" {
-  minio_server   = "minio.localhost"
+  minio_server   = "${local.target_ip}:9000"
   minio_user = "minioadmin"
   minio_password = "minioadmin"
+  minio_ssl      = false
 }
 
 resource "minio_s3_bucket" "bucket" {

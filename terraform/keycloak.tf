@@ -2,10 +2,11 @@ provider "keycloak" {
     client_id     = "admin-cli"
     username      = "admin"
     password      = "admin"
-    url           = "http://proxy/auth"
+    url           = "http://${local.target_ip}/auth"
 }
 
 resource "keycloak_realm" "realm" {
+  depends_on = [docker_container.keycloak]
   realm   = "todo-app-realm"
   enabled = true
   display_name = "To Do Application"
@@ -60,7 +61,7 @@ resource "keycloak_openid_client" "frontend_client" {
   standard_flow_enabled = true
   
   valid_redirect_uris = [
-    "http://proxy/*"
+    "http://${local.current_dns}/*"
   ]
   web_origins = ["*"]
 }

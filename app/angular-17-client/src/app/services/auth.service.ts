@@ -20,9 +20,8 @@ export class AuthService {
   }
 
   private initAuth() {
-    
     const authConfig: AuthConfig = {
-      issuer: 'http://proxy/auth/realms/todo-app-realm',
+      issuer: `${window.location.origin}/auth/realms/todo-app-realm`,
       redirectUri: window.location.origin,
       postLogoutRedirectUri: window.location.origin,
       clientId: 'todo-app-frontend',
