@@ -16,7 +16,7 @@ import java.util.UUID;
 public class S3Service {
 
     public String uploadImage(MultipartFile file) throws IOException {
-        return "asddsadsa";
+        return "";
     }
 
     public byte[] downloadFile(String key) {
