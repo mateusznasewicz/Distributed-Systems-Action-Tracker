@@ -8,14 +8,9 @@ import { AppComponent } from './app.component';
 import { AddTutorialComponent } from './components/add-tutorial/add-tutorial.component';
 import { TutorialDetailsComponent } from './components/tutorial-details/tutorial-details.component';
 import { TutorialsListComponent } from './components/tutorials-list/tutorials-list.component';
-import { ConfigService } from './services/config.service';
-import { RegisterComponent } from './register/register.component';
-import { LoginComponent } from './login/login.component';
 import { AuthInterceptor } from './auth-interceptor';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
-export function initConfig(configService: ConfigService) {
-  return () => configService.loadConfig();
-}
 
 @NgModule({
   declarations: [
@@ -29,17 +24,9 @@ export function initConfig(configService: ConfigService) {
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    RegisterComponent,
-    LoginComponent
+    OAuthModule.forRoot()
   ],
   providers: [
-    // ConfigService,
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: initConfig,
-    //   deps: [ConfigService],
-    //   multi: true,
-    // },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

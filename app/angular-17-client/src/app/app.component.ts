@@ -10,7 +10,7 @@ export class AppComponent implements OnInit{
   title = 'Angular 17 Crud example';
   username: string | null = ''
 
-  constructor(private authService: AuthService) {}
+  constructor(protected authService: AuthService) {}
 
   ngOnInit(): void {
     this.authService.username$.subscribe(name => {

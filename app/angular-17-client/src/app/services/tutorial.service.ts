@@ -13,7 +13,7 @@ export class TutorialService {
   constructor(private http: HttpClient, private configService: ConfigService, private authService: AuthService) {}
 
   private get baseUrl() {
-    return "/api";
+    return "/api/tutorials";
   }
 
   getComments(tutorialId: any): Observable<any> {
@@ -41,7 +41,7 @@ export class TutorialService {
   }
 
   getAll(): Observable<Tutorial[]> {
-    const username = this.authService.username!;
+    const username = this.authService.username;
     return this.http.get<Tutorial[]>(this.baseUrl, {
       params: { username: username }
     });

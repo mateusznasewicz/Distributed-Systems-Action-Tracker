@@ -1,0 +1,46 @@
+{
+  "realm": "todo-app-realm",
+  "enabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": false,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": false,
+  "attributes": {
+    "userProfileEnabled": "true"
+  },
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\": [{\"name\": \"username\", \"permissions\": {\"view\": [\"admin\", \"user\"], \"edit\": [\"admin\", \"user\"]}, \"required\": {\"roles\": [\"admin\", \"user\"]}}, {\"name\": \"email\", \"permissions\": {\"view\": [\"admin\"], \"edit\": [\"admin\"]}}, {\"name\": \"firstName\", \"permissions\": {\"view\": [\"admin\"], \"edit\": [\"admin\"]}}, {\"name\": \"lastName\", \"permissions\": {\"view\": [\"admin\"], \"edit\": [\"admin\"]}}]}"
+          ]
+        }
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "todo-app-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "rootUrl": "http://proxy",
+      "baseUrl": "/",
+      "redirectUris": [
+        "http://proxy/*"
+      ],
+      "webOrigins": [
+        "http://proxy"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "+",
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}

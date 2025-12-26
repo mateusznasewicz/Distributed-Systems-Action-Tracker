@@ -14,5 +14,4 @@ for REPO in "${!IMAGES[@]}"; do
     FULL_NAME="$DOCKERHUB_USER/$REPO:$TAG"
     docker build -f "$DOCKERFILE" -t "$FULL_NAME" .
     docker push "$FULL_NAME"
-    docker rmi "$FULL_NAME"
 done

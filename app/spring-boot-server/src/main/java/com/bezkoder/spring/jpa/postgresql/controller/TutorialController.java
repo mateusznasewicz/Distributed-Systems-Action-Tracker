@@ -77,7 +77,7 @@ public class TutorialController {
 
 	@PostMapping("/tutorials")
 	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial, @AuthenticationPrincipal Jwt jwt) {
-		String username = jwt.getClaimAsString("username");
+		String username = jwt.getClaimAsString("preferred_username");
 		if(!Objects.equals(username, tutorial.getUsername())) {
             log.info("Otrzymano zapytanie o tutoriale. Uzytkownik w jwt: {}", username);
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);

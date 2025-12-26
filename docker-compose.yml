@@ -7,14 +7,36 @@ services:
   backend:
     image: mateusznasewicz/todo-app-backend:latest
     container_name: todo-app-backend
+    environment:
+      DB_URL: database
+      DB_PORT: 5432
+      DB_NAME: todo-app
+      DB_USER: userdb
+      DB_PASSWORD: passdb
+      SERVER_PORT: 8080
+    depends_on:
+      - database
 
   keycloak:
     image: keycloak/keycloak:latest
-    container_name: keycloack
+    container_name: keycloak
+    command: start-dev --import-realm
+    configs:
+      - source: realm_config
+        target: /opt/keycloak/data/import/realm.json
+    environment:
+      KC_HTTP_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_HTTP_RELATIVE_PATH: /auth
   
   database:
     image: postgres:latest
     container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: passdb
+      POSTGRES_USER: userdb
+      POSTGRES_DB: todo-app
   
   minio:
     image: minio/minio:latest
@@ -43,3 +65,5 @@ services:
 configs:
   proxy_config:
     file: ./proxy.conf
+  realm_config:
+    file: ./realm.json
