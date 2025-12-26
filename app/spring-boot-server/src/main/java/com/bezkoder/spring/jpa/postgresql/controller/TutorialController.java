@@ -93,7 +93,7 @@ public class TutorialController {
 	}
 
     @PostMapping(value = "/tutorials/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImageToTutorial(
+        public ResponseEntity<?> uploadImageToTutorial(
             @PathVariable("id") long id,
             @RequestParam("file") MultipartFile file
     ) {

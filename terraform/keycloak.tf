@@ -26,7 +26,6 @@ resource "keycloak_realm_user_profile" "userprofile" {
     }
   }
 
-  # WYŁĄCZENIE EMAILA
   attribute {
     name = "email"
     permissions {
