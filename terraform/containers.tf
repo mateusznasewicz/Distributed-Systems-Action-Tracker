@@ -1,11 +1,5 @@
 provider "docker" {
-  host = local.docker_host
-
-  ssh_opts = [
-    "-o", "StrictHostKeyChecking=no",
-    "-o", "UserKnownHostsFile=/dev/null",
-    "-i", "${path.module}/todo-app-key.pem"
-  ]
+  host = "ssh://ubuntu@${aws_instance.app_server.public_ip}:22"
 }
 
 resource "docker_network" "todo_net" { name = "todo_network" }
@@ -50,7 +44,7 @@ resource "docker_container" "minio" {
   env = [
     "MINIO_ROOT_USER=minioadmin",
     "MINIO_ROOT_PASSWORD=minioadmin",
-    "MINIO_BROWSER_REDIRECT_URL=http://${local.target_ip}:9001"
+    "MINIO_BROWSER_REDIRECT_URL=http://${aws_instance.app_server.public_ip}:9001"
   ]
 
   volumes {
@@ -92,11 +86,11 @@ resource "docker_container" "backend" {
     "DB_PASSWORD=passdb",
     "SERVER_PORT=8080",
     "MINIO_ENDPOINT=http://minio:9000",
-    "DOMAIN=${local.current_dns}",
+    "DOMAIN=${aws_instance.app_server.public_dns}",
     "MINIO_ACCESS_KEY=${minio_iam_service_account.app_user_creds.access_key}", 
     "MINIO_SECRET_KEY=${minio_iam_service_account.app_user_creds.secret_key}",
     "MINIO_BUCKET_NAME=${minio_s3_bucket.bucket.id}",
-    "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://${local.current_dns}/auth/realms/todo-app-realm",
+    "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://${aws_instance.app_server.public_dns}/auth/realms/todo-app-realm",
     "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/auth/realms/todo-app-realm/protocol/openid-connect/certs"
   ]
 }
@@ -131,7 +125,7 @@ resource "docker_container" "proxy" {
     external = 80
   }
   volumes {
-    host_path      = local.proxy_config_path
+    host_path      = "/home/ubuntu/proxy.conf"
     container_path = "/etc/nginx/conf.d/default.conf"
   }
 }
@@ -141,9 +135,9 @@ resource "docker_container" "prometheus" {
   image = "prom/prometheus:latest"
   networks_advanced { name = docker_network.todo_net.name }
 
-  volumes {
-    host_path = abspath("${path.module}/../prometheus.yml")
-    container_path = "/etc/prometheus/prometheus.yml"
+  upload {
+    content = file("${path.module}/../prometheus.yml")
+    file = "/etc/prometheus/prometheus.yml"
   }
 
   volumes {
@@ -158,7 +152,7 @@ resource "docker_container" "grafana" {
   networks_advanced { name = docker_network.todo_net.name }
 
   env = [
-    "GF_SERVER_DOMAIN=${local.current_dns}",
+    "GF_SERVER_DOMAIN=${aws_instance.app_server.public_dns}",
     "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/",
     "GF_SERVER_SERVE_FROM_SUB_PATH=true"
   ]

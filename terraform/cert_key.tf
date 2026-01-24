@@ -16,7 +16,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     common_name = "todo-app" 
   }
   
-  ip_addresses = [ local.target_ip ]
+  ip_addresses = [ aws_instance.app_server.public_ip ]
 
   validity_period_hours = 8760
 

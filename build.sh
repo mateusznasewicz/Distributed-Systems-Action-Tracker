@@ -14,15 +14,21 @@ wait_for_service() {
 cd terraform
 source .env
 terraform init
-TARGET=${1:-local}
-if [ "$TARGET" == "local" ]; then
-    CHECK_IP="127.0.0.1"
+
+CHECK_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+
+terraform apply -target=aws_instance.app_server -auto-approve
+KEY_FILE="todo-app-key.pem"
+if [ -f "$KEY_FILE" ]; then
+    eval "$(ssh-agent -s)"
+    ssh-add "$KEY_FILE"
+    trap 'kill $SSH_AGENT_PID' EXIT
 else
-    CHECK_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+    echo "BŁĄD: Plik $KEY_FILE nie został utworzony przez Terraform!"
+    exit 1
 fi
 
-terraform apply -var="deployment_target=$TARGET" \
-  -target=module.infrastructure \
+terraform apply \
   -target=docker_container.proxy \
   -target=docker_container.minio \
   -target=docker_container.keycloak \
@@ -38,5 +44,5 @@ wait_for_service "http://$CHECK_IP:9000/minio/health/live" "MinIO"
 wait_for_service "http://$CHECK_IP/auth/" "Keycloak"
 
 
-terraform apply -var="deployment_target=$TARGET" -auto-approve
+terraform apply -auto-approve
 echo "Gotowe"

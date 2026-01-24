@@ -2,7 +2,7 @@ provider "keycloak" {
     client_id     = "admin-cli"
     username      = "admin"
     password      = "admin"
-    url           = "https://${local.current_dns}/auth"
+    url           = "https://${aws_instance.app_server.public_dns}/auth"
     tls_insecure_skip_verify = true
 }
 
@@ -62,7 +62,7 @@ resource "keycloak_openid_client" "frontend_client" {
   standard_flow_enabled = true
   
   valid_redirect_uris = [
-    "https://${local.current_dns}/*"
+    "https://${aws_instance.app_server.public_dns}/*"
   ]
   web_origins = ["*"]
 }
