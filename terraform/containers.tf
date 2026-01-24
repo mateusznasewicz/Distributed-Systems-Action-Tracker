@@ -69,6 +69,7 @@ resource "docker_container" "keycloak" {
     "KC_HTTP_RELATIVE_PATH=/auth",
     "KC_BOOTSTRAP_ADMIN_USERNAME=admin",
     "KC_BOOTSTRAP_ADMIN_PASSWORD=admin",
+    "KC_PROXY_HEADERS=xforwarded"
   ]
   volumes {
     volume_name    = docker_volume.keycloak_data.name
@@ -94,7 +95,9 @@ resource "docker_container" "backend" {
     "DOMAIN=${local.current_dns}",
     "MINIO_ACCESS_KEY=${minio_iam_service_account.app_user_creds.access_key}", 
     "MINIO_SECRET_KEY=${minio_iam_service_account.app_user_creds.secret_key}",
-    "MINIO_BUCKET_NAME=${minio_s3_bucket.bucket.id}"
+    "MINIO_BUCKET_NAME=${minio_s3_bucket.bucket.id}",
+    "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://${local.current_dns}/auth/realms/todo-app-realm",
+    "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/auth/realms/todo-app-realm/protocol/openid-connect/certs"
   ]
 }
 
@@ -108,6 +111,21 @@ resource "docker_container" "proxy" {
   name  = "proxy"
   image = "nginx:latest"
   networks_advanced { name = docker_network.todo_net.name }
+  
+  upload {
+    content = tls_self_signed_cert.self_signed_cert.cert_pem
+    file    = "/etc/ssl/certs/server.crt"
+  }
+
+  upload {
+    content = tls_private_key.main_key.private_key_pem
+    file    = "/etc/ssl/private/server.key"
+  }
+
+  ports {
+    internal = 443
+    external = 443
+  }
   ports {
     internal = 80
     external = 80

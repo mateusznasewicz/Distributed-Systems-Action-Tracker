@@ -29,6 +29,8 @@ provider "aws" {
 module "infrastructure" {
   source = "./modules/aws_infra"
   count  = var.deployment_target == "aws" ? 1 : 0
+  private_key = local_file.private_key.content
+  public_key = tls_private_key.main_key.public_key_openssh
 }
 
 locals {

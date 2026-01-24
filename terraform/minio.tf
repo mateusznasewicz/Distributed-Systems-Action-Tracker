@@ -9,6 +9,8 @@ resource "minio_s3_bucket" "bucket" {
   bucket = "todo-app-bucket"
   acl    = "private"
   force_destroy = true
+
+  depends_on = [ docker_container.minio ]
 }
 
 resource "minio_iam_user" "app_user" {
@@ -17,7 +19,7 @@ resource "minio_iam_user" "app_user" {
 
 resource "minio_iam_service_account" "app_user_creds" {
   target_user = minio_iam_user.app_user.name
-  depends_on = [ minio_s3_bucket.bucket, docker_container.minio ]
+  depends_on = [ minio_s3_bucket.bucket ]
 }
 
 resource "minio_iam_policy" "app_policy" {

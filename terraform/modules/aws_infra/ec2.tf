@@ -11,6 +11,12 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
+resource "aws_key_pair" "deployer" {
+  key_name   = "todo-app-key-tf"
+  public_key = var.public_key
+}
+
+
 resource "aws_security_group" "app_sg" {
   name        = "todo-app-security-group"
   description = "Allow HTTP and SSH traffic"
@@ -47,7 +53,7 @@ resource "aws_instance" "app_server" {
   user_data = <<-EOF
               #!/bin/bash
               apt-get update
-              apt-get install -y docker.io docker-compose
+              apt-get install -y docker.io
               systemctl start docker
               systemctl enable docker
               usermod -aG docker ubuntu
@@ -56,13 +62,8 @@ resource "aws_instance" "app_server" {
     connection {
         type        = "ssh"
         user        = "ubuntu"
-        private_key = local_file.private_key.content
+        private_key = var.private_key
         host        = self.public_ip
-    }
-
-    provisioner "file" {
-        source      = "../docker-compose.yml"
-        destination = "/home/ubuntu/docker-compose.yml"
     }
 
     provisioner "file" {

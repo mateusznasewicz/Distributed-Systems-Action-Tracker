@@ -4,7 +4,7 @@ wait_for_service() {
     local url=$1
     local name=$2
     echo "Czekam na $name ($url)..."
-     until curl -s -L --output /dev/null --silent --head --fail "$url"; do
+     until curl -k -s -L --output /dev/null --silent --head --fail "$url"; do
         printf '.'
         sleep 2
     done
@@ -35,7 +35,7 @@ if [ "$TARGET" == "aws" ]; then
 fi
 
 wait_for_service "http://$CHECK_IP:9000/minio/health/live" "MinIO"
-wait_for_service "http://$CHECK_IP/auth" "Keycloak"
+wait_for_service "http://$CHECK_IP/auth/" "Keycloak"
 
 
 terraform apply -var="deployment_target=$TARGET" -auto-approve

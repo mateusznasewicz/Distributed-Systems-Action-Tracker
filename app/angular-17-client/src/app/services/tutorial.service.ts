@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tutorial } from '../models/tutorial.model';
-import { ConfigService } from './config.service';
 import { AuthService } from './auth.service';
 
 
@@ -10,7 +9,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class TutorialService {
-  constructor(private http: HttpClient, private configService: ConfigService, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   private get baseUrl() {
     return "/api/tutorials";

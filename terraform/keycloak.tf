@@ -2,11 +2,12 @@ provider "keycloak" {
     client_id     = "admin-cli"
     username      = "admin"
     password      = "admin"
-    url           = "http://${local.target_ip}/auth"
+    url           = "https://${local.current_dns}/auth"
+    tls_insecure_skip_verify = true
 }
 
 resource "keycloak_realm" "realm" {
-  depends_on = [docker_container.keycloak, docker_container.proxy]
+  depends_on = [ docker_container.proxy, docker_container.keycloak ]
   realm   = "todo-app-realm"
   enabled = true
   display_name = "To Do Application"
@@ -61,7 +62,7 @@ resource "keycloak_openid_client" "frontend_client" {
   standard_flow_enabled = true
   
   valid_redirect_uris = [
-    "http://${local.current_dns}/*"
+    "https://${local.current_dns}/*"
   ]
   web_origins = ["*"]
 }

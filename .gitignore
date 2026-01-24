@@ -4,3 +4,4 @@
 *.tfvars
 .env
 .env_aws
+*.pem
