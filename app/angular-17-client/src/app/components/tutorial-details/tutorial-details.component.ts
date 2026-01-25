@@ -73,6 +73,7 @@ export class TutorialDetailsComponent implements OnChanges {
       },
       error: (err) => {
         console.error('Nie udało się pobrać linku presigned:', err);
+        this.imageSource = undefined;
         this.isImageLoading = false;
       }
     });

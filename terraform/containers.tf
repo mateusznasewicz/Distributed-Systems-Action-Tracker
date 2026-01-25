@@ -97,7 +97,7 @@ resource "docker_container" "backend" {
 
 resource "docker_container" "frontend" {
   name  = "frontend"
-  image = "mateusznasewicz/todo-app-frontend:20260125-202903"
+  image = "mateusznasewicz/todo-app-frontend:20260125-212914"
   networks_advanced { name = docker_network.todo_net.name }
 }
 
