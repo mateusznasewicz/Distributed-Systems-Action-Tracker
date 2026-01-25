@@ -1,5 +1,5 @@
 provider "minio" {
-  minio_server   = "${aws_instance.app_server.public_ip}:9000"
+  minio_server   = "${aws_instance.app_server.public_ip}:9090"
   minio_user = "minioadmin"
   minio_password = "minioadmin"
   minio_ssl      = false

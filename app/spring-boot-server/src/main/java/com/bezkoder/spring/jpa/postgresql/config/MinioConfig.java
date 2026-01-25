@@ -17,11 +17,23 @@ public class MinioConfig {
     @Value("${MINIO_ENDPOINT}")
     private String endpoint;
 
+    @Value("${MINIO_PUBLIC_ENDPOINT}")
+    private String publicEndpoint;
+
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(endpoint)
                 .credentials(accessKey, secretKey)
+                .build();
+    }
+
+    @Bean
+    public MinioClient minioPublicClient() {
+        return MinioClient.builder()
+                .endpoint(publicEndpoint)
+                .credentials(accessKey, secretKey)
+                .region("us-east-1")
                 .build();
     }
 }

@@ -24,10 +24,8 @@ export class TutorialService {
     return this.http.post(`${this.baseUrl}/${tutorialId}/comments`, data);
   }
 
-  getImage(id: any): Observable<Blob> {
-    const url = `${this.baseUrl}/${id}/image`;
-  
-    return this.http.get(url, { responseType: 'blob' });
+  getImage(id: any): Observable<string> {
+    return this.http.get(`${this.baseUrl}/${id}/image`, { responseType: 'text' });
   }
 
   upload(file: File, id: number): Observable<any> {

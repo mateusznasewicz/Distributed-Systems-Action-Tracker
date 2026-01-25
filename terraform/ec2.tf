@@ -29,14 +29,20 @@ resource "aws_security_group" "app_sg" {
   }
 
   ingress {
-    from_port   = 9000
-    to_port     = 9000
+    from_port   = 9090
+    to_port     = 9090
     protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+  }
+
+  ingress {
+    from_port = 9000
+    to_port = 9000
+    protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-
-  egress {
+  ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"

@@ -19,8 +19,8 @@ export class TutorialDetailsComponent implements OnChanges {
   };
 
   message = '';
-  selectedFile?: File
-  imageSource: SafeUrl | null = null;
+  selectedFile?: File;
+  imageSource?: string;
   isImageLoading = false;
   comments: any[] = [];
   newCommentContent = '';
@@ -64,17 +64,15 @@ export class TutorialDetailsComponent implements OnChanges {
 
   loadImage(): void {
     this.isImageLoading = true;
-    this.imageSource = null
     
     this.tutorialService.getImage(this.currentTutorial.id).subscribe({
-      next: (data: Blob) => {
-        const objectURL = URL.createObjectURL(data);
-        this.imageSource = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+      next: (url: string) => {
+        this.imageSource = url;
         this.isImageLoading = false;
-        console.log("obrazek pobrany")
+        console.log("!! POBRANO PRESIGNED URL !!")
       },
       error: (err) => {
-        console.log('Nie udało się pobrać obrazka:', err);
+        console.error('Nie udało się pobrać linku presigned:', err);
         this.isImageLoading = false;
       }
     });

@@ -25,20 +25,19 @@ resource "docker_container" "database" {
   }
 }
 
+data "http" "myip" {
+  url = "https://ipv4.icanhazip.com"
+}
+
 resource "docker_container" "minio" {
   name  = "minio"
   image = "minio/minio:latest"
-  command = ["server", "/data", "--console-address", ":9001"]
+  command = ["server", "/data"]
   networks_advanced { name = docker_network.todo_net.name }
 
   ports {
     internal = 9000
-    external = 9000
-  }
-
-  ports {
-    internal = 9001
-    external = 9001
+    external = 9090
   }
 
   env = [
@@ -73,7 +72,7 @@ resource "docker_container" "keycloak" {
 
 resource "docker_container" "backend" {
   name  = "backend"
-  image = "mateusznasewicz/todo-app-backend:latest"
+  image = "mateusznasewicz/todo-app-backend:20260125-210012"
   networks_advanced { name = docker_network.todo_net.name }
   
   depends_on = [docker_container.database, minio_s3_bucket.bucket]
@@ -86,6 +85,7 @@ resource "docker_container" "backend" {
     "DB_PASSWORD=passdb",
     "SERVER_PORT=8080",
     "MINIO_ENDPOINT=http://minio:9000",
+    "MINIO_PUBLIC_ENDPOINT=https://${aws_instance.app_server.public_ip}:9000",
     "DOMAIN=${aws_instance.app_server.public_dns}",
     "MINIO_ACCESS_KEY=${minio_iam_service_account.app_user_creds.access_key}", 
     "MINIO_SECRET_KEY=${minio_iam_service_account.app_user_creds.secret_key}",
@@ -97,7 +97,7 @@ resource "docker_container" "backend" {
 
 resource "docker_container" "frontend" {
   name  = "frontend"
-  image = "mateusznasewicz/todo-app-frontend:latest"
+  image = "mateusznasewicz/todo-app-frontend:20260125-202903"
   networks_advanced { name = docker_network.todo_net.name }
 }
 
@@ -124,9 +124,14 @@ resource "docker_container" "proxy" {
     internal = 80
     external = 80
   }
-  volumes {
-    host_path      = "/home/ubuntu/proxy.conf"
-    container_path = "/etc/nginx/conf.d/default.conf"
+  ports {
+    internal = 9000
+    external = 9000
+  }
+
+  upload {
+    content = file("${path.module}/../proxy.conf")
+    file = "/etc/nginx/conf.d/default.conf"
   }
 }
 
@@ -157,9 +162,9 @@ resource "docker_container" "grafana" {
     "GF_SERVER_SERVE_FROM_SUB_PATH=true"
   ]
 
-  volumes {
-    host_path = abspath("${path.module}/../grafana_datasource.yml")
-    container_path = "/etc/grafana/provisioning/datasources/datasource.yaml"
+  upload {
+    content = file("${path.module}/../grafana_datasource.yml")
+    file = "/etc/grafana/provisioning/datasources/datasource.yaml"
   }
 
   volumes {

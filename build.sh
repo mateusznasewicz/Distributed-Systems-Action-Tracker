@@ -40,8 +40,8 @@ if [ "$TARGET" == "aws" ]; then
     CHECK_IP=$(terraform output -raw instance_ip)
 fi
 
-wait_for_service "http://$CHECK_IP:9000/minio/health/live" "MinIO"
-wait_for_service "http://$CHECK_IP/auth/" "Keycloak"
+wait_for_service "https://$CHECK_IP:9000/minio/health/live" "MinIO"
+wait_for_service "https://$CHECK_IP/auth/" "Keycloak"
 
 
 terraform apply -auto-approve

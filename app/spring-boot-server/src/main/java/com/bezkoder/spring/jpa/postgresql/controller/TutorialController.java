@@ -62,17 +62,15 @@ public class TutorialController {
 	}
 
     @GetMapping("/tutorials/{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+    public ResponseEntity<String> getImage(@PathVariable Long id) {
         Tutorial tutorial = tutorialRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Nie znaleziono tutoriala o id: " + id));
 
-        String key = tutorial.getKey();
+        String objectName = tutorial.getKey();
 
-        byte[] data = s3Service.downloadFile(key);
+        String presignedUrl = s3Service.getPresignedUrl(objectName);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(data);
+        return ResponseEntity.ok(presignedUrl);
     }
 
 	@PostMapping("/tutorials")

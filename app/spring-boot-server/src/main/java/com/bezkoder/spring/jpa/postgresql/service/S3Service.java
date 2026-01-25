@@ -2,9 +2,11 @@ package com.bezkoder.spring.jpa.postgresql.service;
 
 import com.bezkoder.spring.jpa.postgresql.repository.TutorialRepository;
 import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,39 +23,42 @@ import java.util.UUID;
 @Slf4j
 public class S3Service {
 
-    private final MinioClient s3Client;
+    private final MinioClient minioClient;
+    private final MinioClient minioPublicClient;
+
     private final TutorialRepository tutorialRepository;
 
     @Value("${MINIO_BUCKET_NAME}")
     private String bucketName;
 
+    public String getPresignedUrl(String objectName) {
+        try {
+            return minioPublicClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Blad generowanie presigned url", e);
+        }
+    }
+
     public String uploadImage(MultipartFile file) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String key = UUID.randomUUID() + extension;
+        String objectName = UUID.randomUUID() + extension;
 
-        s3Client.putObject(
+        minioClient.putObject(
                 PutObjectArgs.builder()
                         .bucket(bucketName)
-                        .object(key)
+                        .object(objectName)
                         .stream(file.getInputStream(), file.getSize(), -1)
                         .contentType(file.getContentType())
                         .build()
         );
 
-        return key;
-    }
-
-    public byte[] downloadFile(String key) {
-        try (InputStream stream = s3Client.getObject(
-                GetObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(key)
-                        .build())) {
-            return stream.readAllBytes();
-        } catch (Exception e) {
-            log.error("Nie udało się pobrać pliku z S3", e);
-            throw new RuntimeException("Błąd pobierania pliku");
-        }
+        return objectName;
     }
 }

@@ -2,7 +2,7 @@
 set -e
 
 DOCKERHUB_USER="mateusznasewicz"
-TAG="latest"
+TAG=$(date +%Y%m%d-%H%M%S)
 
 declare -A IMAGES=(
     ["todo-app-frontend"]="Dockerfile.frontend"
@@ -15,3 +15,5 @@ for REPO in "${!IMAGES[@]}"; do
     docker build -f "$DOCKERFILE" -t "$FULL_NAME" .
     docker push "$FULL_NAME"
 done
+
+echo "complete, tag is $TAG"
