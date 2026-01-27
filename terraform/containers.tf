@@ -43,7 +43,6 @@ resource "docker_container" "minio" {
   env = [
     "MINIO_ROOT_USER=minioadmin",
     "MINIO_ROOT_PASSWORD=minioadmin",
-    "MINIO_BROWSER_REDIRECT_URL=http://${aws_instance.app_server.public_ip}:9001"
   ]
 
   volumes {
